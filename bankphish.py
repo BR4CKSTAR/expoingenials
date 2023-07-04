@@ -86,14 +86,17 @@ def link():
 
 
 def ngrok():
-    proceso_php = subprocess.Popen(['php', '-S', 'localhost:8000'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print("Servidor PHP iniciado en http://localhost:8000")
-    proceso_ngrok = subprocess.Popen(['ngrok', 'http', '8000'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    with open('ngrok.yml', 'w') as f:
+        f.write('authtoken: 26NrVm7Ma8aSS0EWC5l0cdNXuVs_s6PCJgUWrQMJJ71PYQcp\n') 
+        f.write('tunnels:\n')
+        f.write('  web:\n')
+        f.write('    addr: 8000\n')
+    proceso_ngrok = subprocess.Popen(['ngrok', 'start', '--config=ngrok.yml', '--all'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     time.sleep(2)
     output = subprocess.check_output(['ngrok', 'http', '8000'])
     url_ngrok = output.decode('utf-8').strip().split('\n')[1].split(' ')[1]
     print("URL de ngrok:", url_ngrok)
-    return proceso_php, proceso_ngrok, url_ngrok
+    return proceso_ngrok, url_ngrok
 
 def detener_servidor_y_ngrok(proceso_php, proceso_ngrok):
     proceso_php.terminate()
